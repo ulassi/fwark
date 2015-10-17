@@ -104,4 +104,22 @@ Device::~Device()
 {
 	
 }
+
+void Device::clear(core::Real r, core::Real g, core::Real b)
+{
+	glClearColor(r, g, b, 1.f);
+	glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void Device::begin_frame()
+{
+	wglMakeCurrent(m_impl->m_device_context, m_impl->m_gl_context);
+}
+
+void Device::end_frame()
+{
+	wglMakeCurrent(NULL, NULL);
+	::SwapBuffers(m_impl->m_device_context);
+}
+
 }

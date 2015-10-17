@@ -9,6 +9,7 @@ class Application
 public:
 	Application(std::unique_ptr<graphics::Device>);
 	~Application();
+	void draw();
 private:
 	std::unique_ptr<Application_Impl> m_impl;
 };

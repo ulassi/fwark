@@ -3,7 +3,6 @@
 #endif 
 
 #include <windows.h>
-#include "win_graphics.h"
 #include "Application.h"
 
 #include <graphics/device.h>
@@ -93,12 +92,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_PAINT:
 		{
-			PAINTSTRUCT ps;
-			HDC hdc = BeginPaint(hwnd, &ps);
-
-			FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
-
-			EndPaint(hwnd, &ps);
+			app->draw();
+			ValidateRect(hwnd, NULL);
 		}
 		return 0;
 	}

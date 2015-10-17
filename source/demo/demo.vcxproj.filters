@@ -27,22 +27,28 @@
     <ClCompile Include="Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\device.cpp">
+    <ClCompile Include="..\core\vec3.cpp">
+      <Filter>Header Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\graphics\device.cpp">
       <Filter>Header Files\graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="win_graphics.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\device.h">
-      <Filter>Header Files\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="core\scope.h">
+    <ClInclude Include="..\core\scope.h">
       <Filter>Header Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\core\types.h">
+      <Filter>Header Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\core\vec3.h">
+      <Filter>Header Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\graphics\device.h">
+      <Filter>Header Files\graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

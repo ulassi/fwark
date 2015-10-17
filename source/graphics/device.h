@@ -2,6 +2,8 @@
 
 #include <memory>
 #include <windows.h>
+#include <core/types.h>
+#include <core/scope.h>
 
 namespace graphics
 {
@@ -14,6 +16,10 @@ namespace graphics
 	public:
 		Device(HDC, HGLRC);
 		~Device();
+		void clear(core::Real r, core::Real g, core::Real b);
+
+		void begin_frame();
+		void end_frame();
 	private:
 		std::unique_ptr<Device_Impl> m_impl;
 	};
