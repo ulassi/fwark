@@ -158,6 +158,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\core\thread.cpp" />
     <ClCompile Include="..\core\vec3.cpp" />
     <ClCompile Include="..\graphics\device.cpp" />
     <ClCompile Include="Application.cpp" />
@@ -165,6 +166,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\core\scope.h" />
+    <ClInclude Include="..\core\thread.h" />
     <ClInclude Include="..\core\types.h" />
     <ClInclude Include="..\core\vec3.h" />
     <ClInclude Include="..\graphics\device.h" />

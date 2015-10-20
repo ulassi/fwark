@@ -6,6 +6,7 @@
 #include "Application.h"
 
 #include <graphics/device.h>
+#include <thread>
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -65,7 +66,8 @@ void MessageLoop()
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	static std::unique_ptr<Application> app;
+	static std::shared_ptr<Application> app;
+	static std::unique_ptr<std::thread> mainthread;
 	switch (uMsg)
 	{
 	case WM_CREATE:
@@ -76,7 +78,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			// initialize application class
 			if ( device )
 			{
-				app = std::make_unique<Application>(std::move(device));
+				app = std::make_shared<Application>(std::move(device));
+				std::weak_ptr<Application> weak_app(app);
+				mainthread = std::make_unique<std::thread>(Application::app_thread, weak_app);
 			}
 			else
 			{
@@ -85,16 +89,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		// setup pixelformat
 		return 0;
+	case WM_CLOSE:
 	case WM_DESTROY:
 		app.reset();
+		mainthread->join();
+		mainthread.reset();
 		PostQuitMessage(0);
-		return 0;
-
-	case WM_PAINT:
-		{
-			app->draw();
-			ValidateRect(hwnd, NULL);
-		}
 		return 0;
 	}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);

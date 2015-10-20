@@ -33,6 +33,9 @@
     <ClCompile Include="..\graphics\device.cpp">
       <Filter>Header Files\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="..\core\thread.cpp">
+      <Filter>Header Files\core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -49,6 +52,9 @@
     </ClInclude>
     <ClInclude Include="..\graphics\device.h">
       <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\core\thread.h">
+      <Filter>Header Files\core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

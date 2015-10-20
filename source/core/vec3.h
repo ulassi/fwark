@@ -1,11 +1,12 @@
 #pragma once
 #include "types.h"
+#include <array>
 
 namespace core
 {
 	class vec3
 	{
-		Real m_x, m_y, m_z;
+		std::array<Real,3> m_vec;
 	public:
 
 		// construction
@@ -26,8 +27,8 @@ namespace core
 		Real dot(const vec3& rhs) const;
 		vec3 cross(const vec3& rhs) const;
 
-		Real x() { return m_x; };
-		Real y() { return m_y; };
-		Real z() { return m_z; };
+		Real x() const { return m_vec[0]; };
+		Real y() const { return m_vec[1]; };
+		Real z() const { return m_vec[2]; };
 	};
 }	
