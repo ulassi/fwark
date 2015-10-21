@@ -1,19 +1,53 @@
 ﻿#include "Application.h"
+#include "update_frame.h"
+
 #include <core/thread.h>
+#include <core/debug.h>
 #include <list>
 #include <array>
+#include <future>
+#include <atomic>
+
+#include <concurrent_queue.h>
 
 class Application_Impl
 {
 public:
 	Application_Impl(std::unique_ptr<graphics::Device> dev)
-	:	m_graphics_device(std::move(dev))
-	{}
-	~Application_Impl(){}
-//private:
+	:	m_graphics_device(std::move(dev)),
+		m_quit(false),
+		m_frame_update_thread_worker(&Application_Impl::update_task_worker_function, std::ref(m_frame_task_available_mutex), std::ref(m_frame_task_available), std::ref(m_frame_update_tasks), std::ref(m_quit))
+	{
+	}
+	~Application_Impl()
+	{
+		m_quit = true;
+		notify_frame_update_worker(); // to ensure it can return safely
+		m_frame_update_thread_worker.join();
+	}
+
 	std::unique_ptr<graphics::Device> m_graphics_device;
 
-	std::list<std::shared_ptr<std::promise<PresentQueue>>> m_frame_updates;
+	//=================================================================================
+	// Signal variables
+	std::atomic<bool>	m_quit;
+
+	//=================================================================================
+	// Frame update thread data
+	typedef std::shared_ptr<std::packaged_task<PresentQueue()>> FrameUpdateTaskType;
+	typedef concurrency::concurrent_queue<FrameUpdateTaskType> FrameUpdateTaskQueueType;
+	FrameUpdateTaskQueueType m_frame_update_tasks;
+	std::condition_variable m_frame_task_available;
+	std::mutex				m_frame_task_available_mutex;
+	std::thread				m_frame_update_thread_worker;
+
+	void notify_frame_update_worker();
+	static void update_task_worker_function(
+		std::mutex& lock, 
+		std::condition_variable& var,
+		FrameUpdateTaskQueueType& task_queue,
+		std::atomic<bool>& quitting );
+	//=================================================================================
 };
 
 Application::Application(std::unique_ptr<graphics::Device> dev)
@@ -38,23 +72,17 @@ InputState Application::get_input()
 	return InputState();
 }
 
-std::future<PresentQueue> Application::update_frame(core::frame_t frame, InputState)
+std::future<PresentQueue> Application::update_frame(core::frame_t frame, InputState input)
 {
-	using namespace core;
-	static std::array<vec3, 3> bg_colors = {
-		vec3{1.f,0.f,0.f}, vec3{0.f,1.f,0.f}, vec3(0.f,0.f,1.f)
-	};
-	std::shared_ptr<std::promise<PresentQueue>> p;
-	if (m_impl->m_frame_updates.size() > 3)
-	{
-		m_impl->m_frame_updates.pop_front();
-	}
-	p = std::make_shared<std::promise<PresentQueue>>();
-
-	// just set the state right away for now, this should be async of course
-	p->set_value(std::move(PresentQueue(frame, bg_colors[frame%bg_colors.size()])));
-	m_impl->m_frame_updates.push_back(p);
-	return std::move( p->get_future() );
+	FrameUpdateContext context;
+	context.frame_number = frame;
+	context.input_state = input;
+	auto update_task = std::make_shared<std::packaged_task<PresentQueue()>>(
+		std::bind( UpdateFrameFunction::update, std::move(context) ));	
+	auto f = update_task->get_future();
+	m_impl->m_frame_update_tasks.push(update_task);
+	m_impl->notify_frame_update_worker();
+	return std::move( f );
 }
 
 void Application::app_thread(std::weak_ptr<Application> app)
@@ -87,5 +115,38 @@ void Application::app_thread(std::weak_ptr<Application> app)
 		{
 			break;
 		}
+	}
+}
+
+void Application_Impl::notify_frame_update_worker()
+{
+	std::lock_guard<std::mutex> lock(m_frame_task_available_mutex);
+	m_frame_task_available.notify_one();
+}
+
+void Application_Impl::update_task_worker_function(
+	std::mutex & var_mutex, 
+	std::condition_variable & var, 
+	FrameUpdateTaskQueueType & task_queue,
+	std::atomic<bool>& should_quit )
+{
+	core::thread::name_current_thread("frame_update_worker");
+	while (!should_quit)
+	{
+		// check for tasks in queue...
+		FrameUpdateTaskType task;
+		while(task_queue.try_pop(task))
+		{
+			// .. run them .. 
+			(*task)();
+		}
+
+		// ... if no tasks, rest until signalled
+		std::unique_lock<std::mutex> lock(var_mutex);
+		var.wait(lock, [&]()
+		{
+			// stop waiting if quit was signalled or more work is there
+			return should_quit || (!task_queue.empty());
+		});
 	}
 }

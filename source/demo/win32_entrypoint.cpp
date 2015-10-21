@@ -10,9 +10,6 @@
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-void MessageLoop();
-
-
 INT WINAPI WinMain(
 	HINSTANCE hInstance, 
 	HINSTANCE hPrevInstance,
@@ -46,22 +43,17 @@ INT WINAPI WinMain(
 
 	if (hwnd == NULL)
 	{
-		return 0;
+		return -1;
 	}
 
 	ShowWindow(hwnd, nCmdShow);
-	MessageLoop();
-	return 0;
-}
-
-void MessageLoop()
-{
 	MSG msg = {};
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
+	return 0;
 }
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
