@@ -3,6 +3,8 @@
 
 #include <core/thread.h>
 #include <core/debug.h>
+#include "render/resources.h"
+
 #include <list>
 #include <array>
 #include <future>
@@ -13,20 +15,11 @@
 class Application_Impl
 {
 public:
-	Application_Impl(std::unique_ptr<graphics::Device> dev)
-	:	m_graphics_device(std::move(dev)),
-		m_quit(false),
-		m_frame_update_thread_worker(&Application_Impl::update_task_worker_function, std::ref(m_frame_task_available_mutex), std::ref(m_frame_task_available), std::ref(m_frame_update_tasks), std::ref(m_quit))
-	{
-	}
-	~Application_Impl()
-	{
-		m_quit = true;
-		notify_frame_update_worker(); // to ensure it can return safely
-		m_frame_update_thread_worker.join();
-	}
+	Application_Impl(std::unique_ptr<graphics::Device> dev);
+	~Application_Impl();
 
-	std::unique_ptr<graphics::Device> m_graphics_device;
+	std::unique_ptr<graphics::Device>			m_graphics_device;
+	std::unique_ptr<render::resource::Factory>	m_render_resource_factory;
 
 	//=================================================================================
 	// Signal variables
@@ -50,6 +43,26 @@ public:
 	//=================================================================================
 };
 
+
+//=================================================================================
+// IMPLEMENTATION
+Application_Impl::Application_Impl(std::unique_ptr<graphics::Device> dev)
+:	m_graphics_device(std::move(dev)),
+	m_quit(false),
+	m_frame_update_thread_worker(&Application_Impl::update_task_worker_function, std::ref(m_frame_task_available_mutex), std::ref(m_frame_task_available), std::ref(m_frame_update_tasks), std::ref(m_quit)),
+	m_render_resource_factory(render::resource::Factory::make_unique())
+{
+}
+Application_Impl::~Application_Impl()
+{
+	m_quit.store(true);
+	notify_frame_update_worker(); // to ensure it can return safely
+	m_frame_update_thread_worker.join();
+}
+
+//=================================================================================
+// INTERFACE
+
 Application::Application(std::unique_ptr<graphics::Device> dev)
 	:	m_impl(std::make_unique<Application_Impl>(std::move(dev)))
 {
@@ -61,7 +74,7 @@ Application::~Application()
 
 void Application::present(PresentQueue q)
 {
-	// negotiate state from application sim, draw that state
+	// execute present queue in optimal fashion through graphics api
 	m_impl->m_graphics_device->begin_frame();
 	m_impl->m_graphics_device->clear(q.color.x(), q.color.y(), q.color.z());
 	m_impl->m_graphics_device->end_frame();
@@ -146,7 +159,7 @@ void Application_Impl::update_task_worker_function(
 		var.wait(lock, [&]()
 		{
 			// stop waiting if quit was signalled or more work is there
-			return should_quit || (!task_queue.empty());
+			return should_quit.load() || (!task_queue.empty());
 		});
 	}
 }

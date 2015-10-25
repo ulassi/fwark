@@ -1,0 +1,16 @@
+
+
+In order of priority
+
+* Draw rectangles
+	* abstract resources
+		* rendertarget
+		* shaders
+		* buffers
+		* drawable/VAO binding 
+	* abstract rectangle primitive
+		* render::command::draw
+* Draw lines
+* Draw textured rectangles
+* Draw text
+* Toast/onscreen logging system

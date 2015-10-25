@@ -2,7 +2,7 @@
 
 #include <core/types.h>
 #include <core/vec3.h>
-#include <graphics/device.h>
+#include <win32_game/graphics_device.h>
 
 #include "present_queue.h"
 #include "input_state.h"

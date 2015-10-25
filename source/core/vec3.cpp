@@ -1,4 +1,4 @@
-#include "vec3.h"
+#include <core/vec3.h>
 #include <stdexcept>
 
 namespace core

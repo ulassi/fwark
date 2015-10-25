@@ -1,8 +1,8 @@
-#include "device.h"
-
+#include <win32_game\graphics_device.h>
 #include <core/scope.h>
 #include <glad/glad.h>
 #include <glad/glad_wgl.h>
+#include <windows.h>
 
 namespace
 {
@@ -23,8 +23,9 @@ namespace
 namespace graphics
 {
 
-std::unique_ptr<Device> make_device(HWND hwnd)
+std::unique_ptr<Device> make_device(ptrdiff_t in_hwnd)
 {
+	HWND hwnd = reinterpret_cast<HWND>(in_hwnd);
 	PIXELFORMATDESCRIPTOR pfd;
 	memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
 	pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
@@ -76,11 +77,11 @@ std::unique_ptr<Device> make_device(HWND hwnd)
 	{
 		throw std::exception("Failed to create core OpenGL context");
 	}
-
-	return std::make_unique<Device>(device_context, rc);
+	
+	return std::make_unique<Device>(std::make_unique<Device_Impl>(device_context, rc));
 }
 
-class Device_Impl
+class Device_Impl 
 {
 	friend class Device;
 public:
@@ -95,8 +96,8 @@ public:
 	HGLRC m_gl_context = nullptr;
 };
 
-Device::Device(HDC hdc, HGLRC rc)
-:	m_impl(std::make_unique<Device_Impl>(hdc,rc))
+Device::Device(std::unique_ptr<Device_Impl> impl)
+:	m_impl(std::move(impl))
 {
 }
 
