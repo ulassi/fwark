@@ -30,6 +30,9 @@
     <ClCompile Include="render\resources.cpp">
       <Filter>source\render</Filter>
     </ClCompile>
+    <ClCompile Include="debug_stats.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\win32_game\win32_game.h">
@@ -55,6 +58,9 @@
     </ClInclude>
     <ClInclude Include="render\resources.h">
       <Filter>source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="debug_stats.h">
+      <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

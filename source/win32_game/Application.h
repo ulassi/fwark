@@ -16,7 +16,7 @@ class Application
 public:
 	Application(std::unique_ptr<graphics::Device>);
 	~Application();
-	void present(PresentQueue);
+	void present(PresentQueue&);
 
 	//! Poll the current input state and return it
 	InputState get_input();

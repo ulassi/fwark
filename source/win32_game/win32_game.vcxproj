@@ -79,6 +79,7 @@
     <ClInclude Include="..\include\win32_game\graphics_device.h" />
     <ClInclude Include="..\include\win32_game\win32_game.h" />
     <ClInclude Include="Application.h" />
+    <ClInclude Include="debug_stats.h" />
     <ClInclude Include="input_state.h" />
     <ClInclude Include="present_queue.h" />
     <ClInclude Include="render\commands.h" />
@@ -87,6 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="debug_stats.cpp" />
     <ClCompile Include="graphics_device.cpp" />
     <ClCompile Include="present_queue.cpp" />
     <ClCompile Include="render\resources.cpp" />
