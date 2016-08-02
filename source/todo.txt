@@ -1,6 +1,6 @@
 = Game
 
-Punch,punch go?
+Punch,punch go? Design is in analog vcs.
 
 = Technology
 
@@ -14,7 +14,15 @@ In order of priority
 		* drawable/VAO binding 
 	* abstract rectangle primitive
 		* render::command::draw
+	* drawing layers
+		* overlay
+		* game world
 * Draw lines
 * Draw textured rectangles
 * Draw text
-* Toast/onscreen logging system
+* Toast/onscreen logging system (?)
+* Entity system
+* Audio
+	* music
+	* sound effects
+
