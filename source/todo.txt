@@ -5,7 +5,11 @@ Punch,punch go? Design is in analog vcs.
 = Technology
 
 In order of priority
-
+* Content pipeline
+	* simple pak file
+	* textures
+	* shaders
+	* meshes
 * Draw rectangles
 	* abstract resources
 		* rendertarget
@@ -25,4 +29,5 @@ In order of priority
 * Audio
 	* music
 	* sound effects
+* Input handling
 
