@@ -1,0 +1,12 @@
+
+CMakeFiles/
+source/build/
+WIN32/
+**/*.vcxproj
+**/*.vcxproj.filters
+**/*.opendb
+**/*.db
+**/*.sdf
+**/*.suo
+**/*.sln
+**/*.cmake

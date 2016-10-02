@@ -19,8 +19,10 @@ message ("cxx Flags: " ${CMAKE_CXX_FLAGS})
 
 # Sub-directories where more CMakeLists.txt exist
 #add_subdirectory(source/core)
+add_definitions(-DUNICODE -D_UNICODE)
 add_subdirectory(source/win32_game)
 add_subdirectory(source/core)
 add_subdirectory(source/demo)
 add_subdirectory(source/glad)
 add_subdirectory(source/stb)
+
