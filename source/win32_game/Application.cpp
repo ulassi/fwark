@@ -124,7 +124,6 @@ PresentQueue function()
 
 std::future<PresentQueue> Application::update_frame(core::frame_t frame, InputState input)
 {
-	TODO("recycle FrameUpdateContext");
 	using namespace std;
 	shared_ptr<FrameUpdateContext> context = m_impl->aquireFrameContext(frame, input);
 	auto func = [=]()->PresentQueue

@@ -5,11 +5,6 @@ Punch,punch go? Design is in analog vcs.
 = Technology
 
 In order of priority
-* Content pipeline
-	* simple pak file
-	* textures
-	* shaders
-	* meshes
 * Draw rectangles
 	* abstract resources
 		* rendertarget
@@ -21,6 +16,17 @@ In order of priority
 	* drawing layers
 		* overlay
 		* game world
+* Content pipeline
+	* simple pak file
+		* RIFF ?
+	* textures
+		* texture compiler
+			* load source images (stb)
+			* compress (stb, squish, crunch) https://www.opengl.org/discussion_boards/showthread.php/190912-CPU-based-DXT-compression
+			* build mipmaps (stb)
+	* shaders
+	* meshes
+
 * Draw lines
 * Draw textured rectangles
 * Draw text

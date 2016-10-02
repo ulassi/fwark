@@ -6,30 +6,31 @@
 
 static std::shared_ptr<Application> app;
 static std::unique_ptr<std::thread> mainthread;
+static Win32Game*					s_game = nullptr;
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
 	case WM_CREATE:
-	{
-		// init the window
-		auto device = graphics::make_device(reinterpret_cast<ptrdiff_t>(hwnd));
+		{
+			// init the window
+			auto device = graphics::make_device(reinterpret_cast<ptrdiff_t>(hwnd));
 
-		// initialize application class
-		if (device)
-		{
-			app = std::make_shared<Application>(std::move(device));
-			std::weak_ptr<Application> weak_app(app);
-			mainthread = std::make_unique<std::thread>(Application::app_thread, weak_app);
+			// initialize application class
+			if (device && s_game)
+			{
+				app = std::make_shared<Application>(std::move(device));
+				std::weak_ptr<Application> weak_app(app);
+				mainthread = std::make_unique<std::thread>(Application::app_thread, weak_app);	
+			}
+			else
+			{
+				PostQuitMessage(0);
+			}
+			s_game->atLaunch();
 		}
-		else
-		{
-			PostQuitMessage(0);
-		}
-	}
-	// setup pixelformat
-	return 0;
+		return 0;
 	case WM_CLOSE:
 	case WM_DESTROY:
 		app.reset();
@@ -48,6 +49,7 @@ public:
 	
 	std::wstring m_game_name;
 	std::weak_ptr<Application> m_app;
+	std::unique_ptr<systems::Loader> m_loader;
 };
 Win32Game_Impl::Win32Game_Impl(std::wstring name)
 :	m_game_name(std::move(name))
@@ -66,12 +68,18 @@ Win32Game::~Win32Game()
 
 }
 
+systems::Loader& Win32Game::getLoader()
+{
+	return *m_impl->m_loader;
+}
+
 int Win32Game::run(
 	HINSTANCE hInstance,
 	HINSTANCE hPrevInstance,
 	PSTR lpCmdLine,
 	INT nCmdShow)
 {
+	s_game = this;
 	// Register the window class.
 	const wchar_t CLASS_NAME[] = L"UrbansWin32GameClass";
 
@@ -101,6 +109,8 @@ int Win32Game::run(
 	{
 		return -1;
 	}
+
+	
 
 	ShowWindow(hwnd, nCmdShow);
 	MSG msg = {};
